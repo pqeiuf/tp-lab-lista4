@@ -63,7 +63,7 @@ public class ServerApp {
         if (add) {
             result[index] = new ClientThread(socket, index, this);
             result[index].start();
-            System.out.println("info: New player joined with number: " + index);
+            System.out.println("Info: New player joined with number: " + index);
         }
 
         return result;

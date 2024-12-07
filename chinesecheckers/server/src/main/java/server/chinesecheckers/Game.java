@@ -31,18 +31,18 @@ public class Game {
                 result = move(player, xS, yS, xK, yK);
                 break;
             default:
-                result = "Unknown command\n";
+                result = "Unknown command";
                 break;
         }
-        return player + ". " + result;
+        return result;
     }
 
     private String draw() {
-        return "draw board\n";
+        return "draw board";
     }
 
     private String move(int player, int xS, int yS, int xK, int yK) {
-        return "moved from (" + xS + ", " + yS + ") to (" + xK + ", " + yK + ")\n";
+        return "player " + player + " moved from (" + xS + ", " + yS + ") to (" + xK + ", " + yK + ")";
     }
 
 }
