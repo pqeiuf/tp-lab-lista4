@@ -7,10 +7,19 @@ public class ServerApp {
     public static final int DEFAULT_PORT = 4444;
     public static final int MAX_PLAYERS = 6;
 
-    public static int clientCount;
-    public static ClientThread[] players;
+    public int clientCount;
+    public ClientThread[] players;
+    public Game game;
 
     public static void main( String[] args ) {
+        new ServerApp();
+    }
+
+    private ServerApp() {
+        runServer();
+    }
+
+    private void runServer() {
         int port = DEFAULT_PORT;
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -39,7 +48,7 @@ public class ServerApp {
         }
     }
 
-    public static ClientThread[] updatePlayers(Socket socket, boolean add) {
+    public ClientThread[] updatePlayers(Socket socket, boolean add) {
         ClientThread[] result = new ClientThread[MAX_PLAYERS + 1];
         int index = 1;
 
@@ -52,7 +61,7 @@ public class ServerApp {
         }
 
         if (add) {
-            result[index] = new ClientThread(socket, index);
+            result[index] = new ClientThread(socket, index, this);
             result[index].start();
             System.out.println("info: New player joined with number: " + index);
         }
@@ -60,7 +69,7 @@ public class ServerApp {
         return result;
     }
 
-    public static int updateClientCount() {
+    public int updateClientCount() {
         int result = 0;
         
         for (int i = 1; i <= MAX_PLAYERS; i++) {

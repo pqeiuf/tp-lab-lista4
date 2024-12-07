@@ -10,15 +10,17 @@ public class ClientThread extends Thread {
 
     private Socket socket;
     private int playerNumber;
+    private ServerApp server;
 
     /**
      * Konstruktor do ustawienia socketu komunikacji z klientem oraz przypisanego wstępnie numeru gracza
      * @param socket
      * @param playerNumber
      */
-    public ClientThread(Socket socket, int playerNumber) {
+    public ClientThread(Socket socket, int playerNumber, ServerApp server) {
         this.socket = socket;
         this.playerNumber = playerNumber;
+        this.server = server;
     }
 
     @Override
@@ -44,6 +46,8 @@ public class ClientThread extends Thread {
 
             } while (!clientResponse.equals("bye"));
 
+            server.updatePlayers(socket, false);
+            server.updateClientCount();
             socket.close();
 
         } catch (UnknownHostException severNotFoundException) {
