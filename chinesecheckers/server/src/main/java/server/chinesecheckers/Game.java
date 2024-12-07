@@ -9,9 +9,9 @@ public class Game {
     }
 
     //command sprawdzone jeszcze w kliencie, zeby nie obciazac niepotrzebnie serwera
-    //fomat komendy: "[numer].[nazwa] [argumenty]"
+    //format komendy: "[numer].[nazwa] [argumenty]"
     public String execute(String command) {
-        if(command.charAt(command.length() - 1) != '0') {
+        if(command.charAt(command.length() - 1) != ' ') {
             command += ' ';
         }
 
