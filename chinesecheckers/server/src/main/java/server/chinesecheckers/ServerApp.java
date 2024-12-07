@@ -26,6 +26,7 @@ public class ServerApp {
                 else {
                     //komunikat do klienta o rozlaczeniu z powodu limitu
                     socket.close();
+                    //zakonczenie programu klienta
                 }
             }
         } catch (Exception e) {
