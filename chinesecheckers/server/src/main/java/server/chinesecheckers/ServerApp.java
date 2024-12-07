@@ -4,18 +4,21 @@ import java.net.*;
 
 public class ServerApp {
 
+    public static final int DEFAULT_PORT = 4444;
     public static final int MAX_PLAYERS = 6;
 
     public static void main( String[] args ) {
-        int port = 4444;
-        try (ServerSocket serverSocket = new ServerSocket(port);){
-            System.out.println("Server listening on port: " + port);
+        int port = DEFAULT_PORT;
 
-            int clientCount = 0;
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            System.out.println("info: Server listening on port " + port);
+
             ClientThread[] players = new ClientThread[MAX_PLAYERS + 1];
+            int clientCount = 0;
 
             while (true) {
                 Socket socket = serverSocket.accept();
+
                 if (clientCount < MAX_PLAYERS) {
                     players = updatePlayers(players, socket);
                     clientCount = updateClientCount(players);
@@ -30,14 +33,14 @@ public class ServerApp {
         }
     }
 
-    public static ClientThread[] updatePlayers (ClientThread[] players, Socket socket) {
+    public static ClientThread[] updatePlayers(ClientThread[] players, Socket socket) {
         ClientThread[] result = new ClientThread[MAX_PLAYERS + 1];
         int index = 1;
 
         for (int i = 1; i <= MAX_PLAYERS; i++) {
             if (players[i] != null && players[i].getState() != Thread.State.TERMINATED) {
                 result[index] = players[i];
-                result[index].changeNumber(index);
+                result[index].changePlayerNumber(index);
                 index++;
             }
         }
@@ -45,7 +48,7 @@ public class ServerApp {
         result[index] = new ClientThread(socket, index);
         result[index].start();
 
-        System.out.println("New player joined.");
+        System.out.println("info: New player joined with number: " + index);
 
         return result;
     }
@@ -61,5 +64,4 @@ public class ServerApp {
 
         return result;
     }
-
 }

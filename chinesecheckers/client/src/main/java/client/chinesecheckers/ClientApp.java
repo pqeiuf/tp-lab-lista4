@@ -1,11 +1,7 @@
 package client.chinesecheckers;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
+import java.io.*;
 
 /**
  * Klasa aplikacji klienta
@@ -31,18 +27,20 @@ public class ClientApp {
      */
     public ClientApp(String[] args) {
         try {
-            playerNickname = args[2];
+            if (args.length < 1) {
+                throw new IllegalArgumentException("Player nickname is required.");
+            }
+            playerNickname = args[0];
 
-            // Jeśli nie zostanie podany port dla serwera ustawiamy domyślny na 4444
-            if (args.length > 2)
-                serverPort = Integer.parseInt(args[3]);
+            // Ustaw port, jeśli nie podano ustaw defaultowy
+            serverPort = (args.length > 1) ? Integer.parseInt(args[1]) : DEFAULT_PORT;
 
         } catch (Exception argumentsError) {
             System.out.println("Arguments error: " + argumentsError);
             System.exit(1);
         }
 
-        runClient(playerNickname, serverPort);
+        runClient();
     }
 
     /**
@@ -52,7 +50,7 @@ public class ClientApp {
         try  {
             Socket socket = new Socket("localhost", serverPort);
 
-            // Utworzenie endpointów komunikacji przez strumienie z serwerem
+            // Inicjalizacja komunikacji przez strumienie z serwerem
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -61,27 +59,33 @@ public class ClientApp {
             // Utworzenie bufora na tekst wpisywany w konsoli
             BufferedReader consoleBufferRead = new BufferedReader(new InputStreamReader(System.in));
 
-            String text;
+            String serverResponse;
+            String messageToServer;
             do {
                 // Odebranie wiadomości z serwera i jej wyświetlenie
-                System.out.println(serverPort + "@" + playerNickname + "> " + in.readLine());
+                serverResponse = in.readLine();
+                // Jeśli response jest null to znaczy że serwer został zamknięty
+                if (serverResponse == null) {
+                    break;
+                }
+                System.out.println(serverPort + ":" + playerNickname + " > " + serverResponse);
 
                 // Wczytanie sygnału który ma być wysłany do serwera
-                System.out.println(serverPort + "@" + playerNickname + "< ");
-                text = consoleBufferRead.readLine();
+                System.out.print(serverPort + ":" + playerNickname + " < ");
+                messageToServer = consoleBufferRead.readLine();
 
                 // Wysłanie do wiadomości serwera
-                out.println(text);
+                out.println(messageToServer);
 
-            } while (!text.equals("bye"));
+            } while (!messageToServer.equals("bye"));
 
             socket.close();
 
         } catch (UnknownHostException severNotFoundException) {
-            System.out.println("Server not found error: " + severNotFoundException);
+            System.out.println("ERROR: " + severNotFoundException);
 
         } catch (IOException IOError) {
-            System.out.println("I/O error: " + IOError);
+            System.out.println("ERROR: " + IOError);
         }
     }
 }
