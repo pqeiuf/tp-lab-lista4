@@ -10,14 +10,16 @@ import java.net.UnknownHostException;
 /**
  * Klasa aplikacji klienta
  */
-public class ClientApp 
-{
+public class ClientApp {
+
+    public static final int DEFAULT_PORT = 4444;
+
     private String playerNickname;
     private int serverPort;
-    
+
     /**
      * Punkt wejścia do aplikacji klienta
-     * @param args muszą zawierać kolejno playerNickname oraz serverPort
+     * @param args muszą zawierać kolejno playerNickname oraz opcjonalnie serverPort
      */
     public static void main(String[] args) {
         ClientApp clientApp = new ClientApp(args);
@@ -25,19 +27,22 @@ public class ClientApp
 
     /**
      * Konstruktor ustawiający playerNickname oraz serverPort
-     * @param args lista, która powinna zawierać playerNickname oraz serverPort
+     * @param args lista, która powinna zawierać playerNickname oraz opcjonalnie serverPort
      */
     public ClientApp(String[] args) {
         try {
             playerNickname = args[2];
-            serverPort = Integer.parseInt(args[3]);
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            // Jeśli nie zostanie podany port dla serwera ustawiamy domyślny na 4444
+            if (args.length > 2)
+                serverPort = Integer.parseInt(args[3]);
+
+        } catch (Exception argumentsError) {
+            System.out.println("Arguments error: " + argumentsError);
             System.exit(1);
         }
 
-        runClient();
+        runClient(playerNickname, serverPort);
     }
 
     /**
@@ -58,14 +63,14 @@ public class ClientApp
 
             String text;
             do {
-                // Odbieranie wiadomości z serwera i jej wyświetlenie
+                // Odebranie wiadomości z serwera i jej wyświetlenie
                 System.out.println(serverPort + "@" + playerNickname + "> " + in.readLine());
 
                 // Wczytanie sygnału który ma być wysłany do serwera
                 System.out.println(serverPort + "@" + playerNickname + "< ");
                 text = consoleBufferRead.readLine();
 
-                // Wysylanie do wiadomości serwera
+                // Wysłanie do wiadomości serwera
                 out.println(text);
 
             } while (!text.equals("bye"));
@@ -73,10 +78,10 @@ public class ClientApp
             socket.close();
 
         } catch (UnknownHostException severNotFoundException) {
-            System.out.println("Server not found: " + severNotFoundException.getMessage());
+            System.out.println("Server not found error: " + severNotFoundException);
 
         } catch (IOException IOError) {
-            System.out.println("I/O error: " + IOError.getMessage());
+            System.out.println("I/O error: " + IOError);
         }
     }
 }
