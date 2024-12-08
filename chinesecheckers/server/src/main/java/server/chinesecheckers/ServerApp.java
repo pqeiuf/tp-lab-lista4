@@ -9,7 +9,7 @@ public class ServerApp {
 
     public int clientCount;
     public ClientThread[] players;
-    public Game game;
+    public GameEngine game;
 
     public static void main( String[] args ) {
         new ServerApp();
@@ -27,6 +27,7 @@ public class ServerApp {
 
             players = new ClientThread[MAX_PLAYERS + 1];
             clientCount = 0;
+            game = new GameEngine(this);
 
             while (true) {
                 Socket socket = serverSocket.accept();

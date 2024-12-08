@@ -9,8 +9,9 @@ import java.io.*;
 public class ClientThread extends Thread {
 
     private Socket socket;
-    private int playerNumber;
     private ServerApp server;
+    public int playerNumber;
+    public int status; //0 - czeka na gre, 1 w grze, czeka na ruch, 2 - wykonuje ruch
 
     /**
      * Konstruktor do ustawienia socketu komunikacji z klientem oraz przypisanego wstępnie numeru gracza
@@ -21,6 +22,7 @@ public class ClientThread extends Thread {
         this.socket = socket;
         this.playerNumber = playerNumber;
         this.server = server;
+        status = 0;
     }
 
     @Override
@@ -83,33 +85,32 @@ public class ClientThread extends Thread {
                 break;
             case "start":
                 int arg = Integer.parseInt(argument);
-                if (server.game != null) {
+                if (server.game.state()) {
                     response = "The game is already being played";
                 }
                 else if (arg == server.clientCount) {
-                    server.game = new Game(1, arg);
-                    response = "Started game for " + arg + " players";
+                    response = server.game.start(1, arg);
                 } else {
                     response = "Invalid number of players (currently " + server.clientCount + ")";
                 }
                 break;
             case "draw":
-                if (server.game != null) {
-                    response = server.game.execute(playerNumber + "." + command);
+                if (server.game.state()) {
+                    response = server.game.execute(playerNumber, command, argument);
                 } else {
                     response = "There is no game currently being played";
                 }
                 break;
             case "skip":
-                if (server.game != null) {
-                    response = "Skipped your turn";
+            if (server.game.state()) {
+                response = "Skipped your turn. " + server.game.nextPlayer();
                 } else {
                     response = "There is no game currently being played";
                 }
                 break;
             case "move":
-                if (server.game != null) {
-                    response = server.game.execute(playerNumber + "." + command + " " + argument);
+                if (server.game.state()) {
+                    response = server.game.execute(playerNumber, command, argument);
                 } else {
                     response = "There is no game currently being played";
                 }
