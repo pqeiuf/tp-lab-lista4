@@ -14,6 +14,10 @@ public class GameEngine {
     }
 
     public String start(int type, int numberOfPlayers) {
+        if (numberOfPlayers != 2 && numberOfPlayers != 3 && numberOfPlayers != 4 && numberOfPlayers != 6) {
+            return "Unable to start new game for " + numberOfPlayers + " - try for 2, 3, 4 or 6.";
+        }
+
         players = new ClientThread[numberOfPlayers];
         playersId = new int[numberOfPlayers];
 
@@ -40,7 +44,7 @@ public class GameEngine {
                 server.players[i].status = 0;
             }
             players = null;
-            return "Unable to start new game for " + numberOfPlayers;
+            return "Unable to start new game for " + numberOfPlayers + " - not enough players!";
         }
     }
 
@@ -60,7 +64,7 @@ public class GameEngine {
                 int yS = Integer.parseInt(arguments.substring(arguments.indexOf(',') + 1, arguments.indexOf('-')));
                 int xF = Integer.parseInt(arguments.substring(arguments.indexOf('-') + 1, arguments.lastIndexOf(',')));
                 int yF = Integer.parseInt(arguments.substring(arguments.lastIndexOf(',') + 1));
-                result = game.move(player, xS, yS, xF, yF) + " " + nextPlayer();
+                result = game.move(player, xS, yS, xF, yF) + ". " + nextPlayer();
                 break;
             case "draw":
                 result = game.draw();
