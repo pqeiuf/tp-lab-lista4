@@ -10,11 +10,9 @@ import java.io.*;
 public class ServerInputHandlerThread extends Thread {
 
     private ClientApp clientApp;
-    private IOThreadsFlag threadsFlag;
 
-    ServerInputHandlerThread(ClientApp clientApp, IOThreadsFlag threadsFlag) {
+    ServerInputHandlerThread(ClientApp clientApp) {
         this.clientApp = clientApp;
-        this.threadsFlag = threadsFlag;
     }
 
     @Override
@@ -30,9 +28,8 @@ public class ServerInputHandlerThread extends Thread {
                 // Jeśli response jest null to znaczy że serwer został zamknięty wówczas zamykamy aplikację
                 if (serverResponse == null) {
                     System.out.println("\n" + clientApp.serverPort + ":" + clientApp.playerNickname + " >> Server has been shut down");
-                    threadsFlag.threadsFlag = false;
                     clientApp.socket.close();
-                    break;
+                    System.exit(1);
                 }
                 
                 System.out.println("\n" + clientApp.serverPort + ":" + clientApp.playerNickname + " >> " + serverResponse);
@@ -44,10 +41,10 @@ public class ServerInputHandlerThread extends Thread {
                     clientApp.consoleBufferReader.readLine(); // Odczytaj i odrzuć każdą linię
                 }
 
-            } while (threadsFlag.threadsFlag);
+            } while (true);
 
-        } catch (Exception IOError) { }
-
-        System.exit(1);
+        } catch (Exception IOError) { 
+            System.out.println("ERROR (and program didn't close the socket): " + IOError);
+        }
     }
 }

@@ -10,11 +10,9 @@ import java.io.*;
 public class ServerOutputHandlerThread extends Thread {
 
     private ClientApp clientApp;
-    private IOThreadsFlag threadsFlag;
 
-    ServerOutputHandlerThread(ClientApp clientApp, IOThreadsFlag threadsFlag) {
+    ServerOutputHandlerThread(ClientApp clientApp) {
         this.clientApp = clientApp;
-        this.threadsFlag = threadsFlag;
     }
 
 
@@ -36,9 +34,8 @@ public class ServerOutputHandlerThread extends Thread {
 
                 if (messageToServer.equals("exit")) {
                     // Jeśli messageToServer to "exit" to znaczy że gracz chce wyłączyć aplikację
-                    threadsFlag.threadsFlag = false;
                     clientApp.socket.close();
-                    return;
+                    System.exit(0);
 
                 } else if (messageToServer.substring(0, 4).equals("HELP") || messageToServer.substring(0, 5).equals("ERROR")) {
                     System.out.println(messageToServer);
@@ -47,10 +44,10 @@ public class ServerOutputHandlerThread extends Thread {
                     out.println(messageToServer);
                 }
 
-            } while (threadsFlag.threadsFlag);
+            } while (true);
 
-        } catch (Exception IOError) { }
-
-        System.exit(1);
+        } catch (Exception IOError) { 
+            System.out.println("ERROR (and program didn't close the socket): " + IOError);
+        }
     }
 }

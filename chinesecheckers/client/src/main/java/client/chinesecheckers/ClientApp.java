@@ -81,14 +81,12 @@ public class ClientApp {
         try  {
             socket = new Socket("localhost", serverPort);
 
-            IOThreadsFlag threadsFlag = new IOThreadsFlag();
-
             // Stwórz i uruchom wątek odpowiedzialny za odbieranie informacji od serwera
-            serverInputHandlerThread = new ServerInputHandlerThread(this, threadsFlag);
+            serverInputHandlerThread = new ServerInputHandlerThread(this);
             serverInputHandlerThread.start();
 
             // Stwórz i uruchom wątek odpowiedzialny za wysyłanie informacji do serwera
-            serverOutputHandlerThread = new ServerOutputHandlerThread(this, threadsFlag);
+            serverOutputHandlerThread = new ServerOutputHandlerThread(this);
             serverOutputHandlerThread.start();
 
         } catch (UnknownHostException severNotFoundException) {
