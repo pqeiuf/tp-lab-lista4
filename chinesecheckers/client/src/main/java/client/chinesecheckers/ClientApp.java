@@ -4,87 +4,92 @@ import java.net.*;
 import java.io.*;
 
 /**
- * Klasa aplikacji klienta
+ * Główna klasa aplikacji klienta
  */
 public class ClientApp {
 
-    public static final int DEFAULT_PORT = 4444;
+    private static final int DEFAULT_PORT = 4444;
 
-    private String playerNickname;
-    private int serverPort;
+    public String playerNickname;
+    public int serverPort;
 
-    /**
-     * Punkt wejścia do aplikacji klienta
-     * @param args muszą zawierać kolejno playerNickname oraz opcjonalnie serverPort
-     */
+    public BufferedReader consoleBufferReader;
+    public Socket socket;
+    public ServerOutputHandlerThread serverOutputHandlerThread;
+    public ServerInputHandlerThread serverInputHandlerThread;
+
     public static void main(String[] args) {
         new ClientApp(args);
     }
 
-    /**
-     * Konstruktor ustawiający playerNickname oraz serverPort
-     * @param args lista, która powinna zawierać playerNickname oraz opcjonalnie serverPort
-     */
     public ClientApp(String[] args) {
-        try {
-            if (args.length < 1) {
-                throw new IllegalArgumentException("Player nickname is required.");
-            }
-            playerNickname = args[0];
-
-            // Ustaw port, jeśli nie podano ustaw defaultowy
-            serverPort = (args.length > 1) ? Integer.parseInt(args[1]) : DEFAULT_PORT;
-
-        } catch (Exception argumentsError) {
-            System.out.println("Arguments error: " + argumentsError);
-            System.exit(1);
-        }
-
-        runClient();
+        clientInit(args);
     }
 
-    /**
-     * Funckja obsługująca komunikację z serwerem
-     */
-    private void runClient() {
-        try  {
-            Socket socket = new Socket("localhost", serverPort);
+    public void clientInit(String[] args) {
+        // Wstępne ustawienie nieprawidłowej wartości na serverPort
+        serverPort = -1;
 
-            // Inicjalizacja komunikacji przez strumienie z serwerem
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        // Ustawienie nicku i pierwszego portu
+        if (args.length > 1) {
+            for (String arg: args) {
+                if (arg.startsWith("nickname:") && arg.length() > 8) {
+                    playerNickname = arg.substring(9);
 
-            out.println("Hello " + playerNickname);
+                } else if (arg.equals("port:default")) {
+                    serverPort = DEFAULT_PORT;
 
-            // Utworzenie bufora na tekst wpisywany w konsoli
-            BufferedReader consoleBufferRead = new BufferedReader(new InputStreamReader(System.in));
-
-            boolean skipResponse = false;
-
-            String serverResponse;
-            String messageToServer;
-            do {
-                if (!skipResponse) {
-                    serverResponse = in.readLine();
-                    // Jeśli response jest null to znaczy że serwer został zamknięty
-                    if (serverResponse == null) {
-                        break;
+                } else if (arg.startsWith("port:") && arg.length() > 5) {
+                    try {
+                        serverPort = Integer.parseInt(arg.substring(5));
+                    } catch(NumberFormatException e) {
+                        continue;
                     }
-                    System.out.println(serverPort + ":" + playerNickname + " > " + serverResponse);
                 }
-                skipResponse = false;
+            }
+        }
 
-                System.out.print(serverPort + ":" + playerNickname + " < ");
-                messageToServer = formatMessage(consoleBufferRead.readLine().trim());
+        // Utworzenie bufora na tekst wpisywany w konsoli
+        consoleBufferReader = new BufferedReader(new InputStreamReader(System.in));
 
-                if (messageToServer.substring(0, 4).equals("HELP") || messageToServer.substring(0, 4).equals("ERRO")) {
-                    System.out.println(messageToServer);
-                    skipResponse = true;
-                } else {
-                    out.println(messageToServer);
+        try {
+            // Jeśli gracz nie wpisał nickname, ustal go teraz
+            if (playerNickname == null) {
+                System.out.print("Please enter nickname: ");
+                playerNickname = consoleBufferReader.readLine();
+            }
+
+            // Jeśli gracz nie wpisał (poprawnego) portu
+            if (serverPort == -1) {
+                while (serverPort == -1) {
+                    try {
+                        System.out.print("Please enter server port: ");
+                        serverPort = Integer.parseInt(consoleBufferReader.readLine());
+                    } catch (NumberFormatException e) {
+                        continue;
+                    }
                 }
-            } while (!messageToServer.equals("exit"));
-            socket.close();
+            }
+        } catch (IOException IOError) {
+            System.out.println("ERROR: " + IOError);
+        }
+
+        startServerIOThreads();
+    }
+
+    private void startServerIOThreads() {
+        try  {
+            socket = new Socket("localhost", serverPort);
+
+            IOThreadsFlag threadsFlag = new IOThreadsFlag();
+
+            // Stwórz i uruchom wątek odpowiedzialny za odbieranie informacji od serwera
+            serverInputHandlerThread = new ServerInputHandlerThread(this, threadsFlag);
+            serverInputHandlerThread.start();
+
+            // Stwórz i uruchom wątek odpowiedzialny za wysyłanie informacji do serwera
+            serverOutputHandlerThread = new ServerOutputHandlerThread(this, threadsFlag);
+            serverOutputHandlerThread.start();
 
         } catch (UnknownHostException severNotFoundException) {
             System.out.println("ERROR: " + severNotFoundException);
@@ -92,69 +97,5 @@ public class ClientApp {
         } catch (IOException IOError) {
             System.out.println("ERROR: " + IOError);
         }
-    }
-
-    private String formatMessage(String message) {
-        String formattedMessage;
-
-        String command;
-        String argument;
-
-        int spaceIndex = message.indexOf(' ');
-        if (spaceIndex == -1) {
-            command = message;
-            argument = "";
-        } else {
-            command = message.substring(0, spaceIndex);
-            argument = message.substring(spaceIndex + 1).replaceAll("\\s+", "");
-        }
-
-        switch (command) {
-            case "bye":
-            case "exit":
-            case "quit":
-                formattedMessage = "exit";
-                break;
-            case "help": 
-                formattedMessage = "HELP:\n";
-                formattedMessage += "bye/exit/quit - leave the app\n";
-                formattedMessage += "draw - shows current state of the board\n";
-                formattedMessage += "help - shows this instruction\n";
-                formattedMessage += "move [arg],[arg]-[arg],[arg] - moves piece between chosen points\n";
-                formattedMessage += "skip = skips your move\n";
-                formattedMessage += "start [arg] - starts new game for chosen number of people\n";
-                break;
-            case "start":
-                try {
-                    Integer.parseInt(argument);
-                    formattedMessage = command + " " + argument;
-                } catch (NumberFormatException e) {
-                    formattedMessage = "ERROR: invalid argument. Try start [arg]";
-                }
-                break;
-            case "draw":
-                formattedMessage = command;
-                break;
-            case "skip":
-                formattedMessage = command;
-                break;
-            case "move":
-                try {
-                    int[] args = new int[4];
-                    args[0] = Integer.parseInt(argument.substring(0, argument.indexOf(',')));
-                    args[1] = Integer.parseInt(argument.substring(argument.indexOf(',') + 1, argument.indexOf('-')));
-                    args[2] = Integer.parseInt(argument.substring(argument.indexOf('-') + 1, argument.lastIndexOf(',')));
-                    args[3] = Integer.parseInt(argument.substring(argument.lastIndexOf(',') + 1));
-                    formattedMessage = command + " " + args[0] + "," + args[1] + "-" + args[2] + "," + args[3];
-                } catch (Exception e) {
-                    formattedMessage = "ERROR: invalid argument. Try move [arg],[arg]-[arg],[arg]";
-                }
-                break;
-            default:
-                formattedMessage = "ERROR: Unknown command. Try help to show all available commands.";
-                break;
-        }
-
-        return formattedMessage;
     }
 }

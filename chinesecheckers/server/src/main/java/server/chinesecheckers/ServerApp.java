@@ -2,6 +2,9 @@ package server.chinesecheckers;
 
 import java.net.*;
 
+/**
+ * Główna klasa aplikacji serwera
+ */
 public class ServerApp {
 
     public static final int DEFAULT_PORT = 4444;
