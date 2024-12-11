@@ -15,5 +15,4 @@ public class Game {
     public String move(int player, int xS, int yS, int xK, int yK) {
         return "player " + player + " moved from (" + xS + ", " + yS + ") to (" + xK + ", " + yK + ")";
     }
-
 }
