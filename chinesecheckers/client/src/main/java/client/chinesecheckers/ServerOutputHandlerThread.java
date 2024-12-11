@@ -26,8 +26,6 @@ public class ServerOutputHandlerThread extends Thread {
 
             String messageToServer;
             do {
-                // System.out.print(clientApp.serverPort + ":" + clientApp.playerNickname + " << ");
-
                 // Sformatuj wpisany input gracza
                 messageToServer = UserInputInterpreter.interpretUserInput(clientApp.consoleBufferReader.readLine());
 
@@ -36,7 +34,10 @@ public class ServerOutputHandlerThread extends Thread {
                     clientApp.socket.close();
                     System.exit(0);
 
-                } else if (messageToServer.startsWith("HELP") || messageToServer.startsWith("ERROR")) {
+                } else if (messageToServer.startsWith("HELP")) {
+                    System.out.println(messageToServer.substring(4));
+
+                } else if (messageToServer.startsWith("ERROR")) {
                     System.out.println(messageToServer);
 
                 } else {

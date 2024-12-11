@@ -27,19 +27,17 @@ public class ServerInputHandlerThread extends Thread {
 
                 // Jeśli response jest null to znaczy że serwer został zamknięty wówczas zamykamy aplikację
                 if (serverResponse == null) {
-                    System.out.println("\n" + clientApp.serverPort + ":" + clientApp.playerNickname + " >> Server has been shut down");
+                    System.out.println(" >> Server has been shut down");
                     clientApp.socket.close();
                     System.exit(1);
                 }
                 
-                System.out.println("\n" + clientApp.serverPort + ":" + clientApp.playerNickname + " >> " + serverResponse);
-                // Ponowne wydrukowanie wstępu linijki inputu
-                // System.out.print(clientApp.serverPort + ":" + clientApp.playerNickname + " << ");
+                System.out.println(" >> " + serverResponse);
 
                 // Wyczyść bufor wejścia by nie kontynuować wpisanej komendy
-                // while (clientApp.consoleBufferReader.ready()) {
-                //     clientApp.consoleBufferReader.readLine(); // Odczytaj i odrzuć każdą linię
-                // }
+                while (clientApp.consoleBufferReader.ready()) {
+                    clientApp.consoleBufferReader.readLine(); // Odczytaj i odrzuć każdą linię
+                }
 
             } while (true);
 

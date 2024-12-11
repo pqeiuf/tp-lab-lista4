@@ -37,13 +37,13 @@ public class UserInputInterpreter {
                 break;
 
             case "help": 
-                formattedMessage = "HELP:\n";
-                formattedMessage += "bye/exit/quit - leave the app\n";
-                formattedMessage += "draw - shows current state of the board\n";
-                formattedMessage += "help - shows this instruction\n";
-                formattedMessage += "move [arg],[arg]-[arg],[arg] - moves piece between chosen points\n";
-                formattedMessage += "skip = skips your move\n";
-                formattedMessage += "start [arg] - starts new game for chosen number of people\n";
+                formattedMessage = "HELP";
+                formattedMessage += "\tbye/exit/quit - leave the app\n";
+                formattedMessage += "\tdraw - shows current state of the board\n";
+                formattedMessage += "\thelp - shows this instruction\n";
+                formattedMessage += "\tmove [arg],[arg]-[arg],[arg] - moves piece between chosen points\n";
+                formattedMessage += "\tskip = skips your move\n";
+                formattedMessage += "\tstart [arg] - starts new game for chosen number of people";
                 break;
 
             case "start":
