@@ -1,4 +1,4 @@
-# Chineese Checkers (Chińskie Warcaby)
+# Chinese Checkers (Chińskie Warcaby)
 
 ### Autorzy
 Błażej Pawluk, Tomasz Stefaniak
