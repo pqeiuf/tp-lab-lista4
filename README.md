@@ -1,9 +1,9 @@
 # Chineese Checkers (Chińskie Warcaby)
 
-#### Autorzy
+### Autorzy
 Błażej Pawluk, Tomasz Stefaniak
 
-#### Intrukcja uruchomienia serwera i klienta
+### Intrukcja uruchomienia serwera i klienta
 Projekt zawiera 3 pliki pom.xml z których ten znajdujący się bezpośrednio pod /chinesecheckers to projekt nadrzędny.
 Do budowania i uruchomienia można wykorzystać gotowe skrypty do shella pod /scripts albo oczywiście ręcznie wpisać komendy się w nich znajdujące.
 W przypadku uruchamiania skryptów cwd musi być ścieżką do repozytorium. Opis działania skryptów:
