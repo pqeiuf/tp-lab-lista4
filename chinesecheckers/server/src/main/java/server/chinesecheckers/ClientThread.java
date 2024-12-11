@@ -11,7 +11,7 @@ public class ClientThread extends Thread {
     public Socket socket;
     private ServerApp server;
     public int playerNumber;
-    public int status; //0 - czeka na gre, 1 w grze, czeka na ruch, 2 - wykonuje ruch
+    public int status; // 0 - czeka na gre, 1 w grze, czeka na ruch, 2 - wykonuje ruch
 
     private PrintWriter out;
 
@@ -44,7 +44,7 @@ public class ClientThread extends Thread {
                 playerNickname = "Unknown";
             }
 
-            System.out.println("player with nickname '" + playerNickname + "' connected to server");
+            System.out.println("player with nickname '" + playerNickname + " and number " + playerNumber + "' connected to server");
             out.println("Hello " + playerNickname + "! I am server!");
 
             do {
@@ -54,8 +54,8 @@ public class ClientThread extends Thread {
                     System.out.println("player:" + playerNumber + " DISCONNECTED ");
                     break;
                 }
-                System.out.println("player:" + playerNumber + " > " + clientMessage);
-                server.printForAll("player:" + playerNumber + " > " + clientMessage);
+                System.out.println("player:" + playerNumber + " >> " + clientMessage);
+                server.printForAllExcept("player:" + playerNumber + " >> " + clientMessage, this);
                 
                 String response = response(clientMessage);
                 out.println(response);

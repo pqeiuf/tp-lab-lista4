@@ -34,11 +34,6 @@ public class ServerInputHandlerThread extends Thread {
                 
                 System.out.println(" >> " + serverResponse);
 
-                // Wyczyść bufor wejścia by nie kontynuować wpisanej komendy
-                while (clientApp.consoleBufferReader.ready()) {
-                    clientApp.consoleBufferReader.readLine(); // Odczytaj i odrzuć każdą linię
-                }
-
             } while (true);
 
         } catch (Exception IOError) { 

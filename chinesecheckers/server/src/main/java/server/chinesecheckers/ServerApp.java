@@ -85,9 +85,13 @@ public class ServerApp {
         return result;
     }
 
-    public void printForAll(String message) {
-        for(int i = 1; i <= clientCount; i++) {
-            if(players[i] != null && players[i].getState() != Thread.State.TERMINATED) {
+    /**
+     * Metoda do printowania wszystkim klientom tego co wysłał jeden z nich
+     * Pierwotny wysyłacz nie otrzymuje tutaj wiadomości ponieważ dla niego jest generowana inna wiadomość
+     */
+    public void printForAllExcept(String message, ClientThread excludedSender) {
+        for (int i = 1; i <= clientCount; i++) {
+            if (players[i] != null && players[i].getState() != Thread.State.TERMINATED && players[i] != excludedSender) {
                 players[i].printMessage(message);
             }
         }
