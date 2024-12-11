@@ -34,12 +34,12 @@ public class ServerInputHandlerThread extends Thread {
                 
                 System.out.println("\n" + clientApp.serverPort + ":" + clientApp.playerNickname + " >> " + serverResponse);
                 // Ponowne wydrukowanie wstępu linijki inputu
-                System.out.print(clientApp.serverPort + ":" + clientApp.playerNickname + " << ");
+                // System.out.print(clientApp.serverPort + ":" + clientApp.playerNickname + " << ");
 
                 // Wyczyść bufor wejścia by nie kontynuować wpisanej komendy
-                while (clientApp.consoleBufferReader.ready()) {
-                    clientApp.consoleBufferReader.readLine(); // Odczytaj i odrzuć każdą linię
-                }
+                // while (clientApp.consoleBufferReader.ready()) {
+                //     clientApp.consoleBufferReader.readLine(); // Odczytaj i odrzuć każdą linię
+                // }
 
             } while (true);
 

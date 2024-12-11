@@ -84,4 +84,12 @@ public class ServerApp {
 
         return result;
     }
+
+    public void printForAll(String message) {
+        for(int i = 1; i <= clientCount; i++) {
+            if(players[i] != null && players[i].getState() != Thread.State.TERMINATED) {
+                players[i].printMessage(message);
+            }
+        }
+    }
 }

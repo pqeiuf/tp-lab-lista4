@@ -13,6 +13,8 @@ public class ClientThread extends Thread {
     public int playerNumber;
     public int status; //0 - czeka na gre, 1 w grze, czeka na ruch, 2 - wykonuje ruch
 
+    private PrintWriter out;
+
     /**
      * Konstruktor do ustawienia socketu komunikacji z klientem oraz przypisanego wstępnie numeru gracza
      * @param socket
@@ -29,7 +31,7 @@ public class ClientThread extends Thread {
     public void run() {
         try  {
             // Inicjalizacja komunikacji przez strumienie z klientem
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             String clientMessage;
@@ -46,6 +48,7 @@ public class ClientThread extends Thread {
                     break;
                 }
                 System.out.println("player:" + playerNumber + " > " + clientMessage);
+                server.printForAll("player:" + playerNumber + " > " + clientMessage);
                 
                 String response = response(clientMessage);
                 out.println(response);
@@ -129,5 +132,9 @@ public class ClientThread extends Thread {
      */
     public void changePlayerNumber(int newPlayerNumber) {
         playerNumber = newPlayerNumber;
+    }
+
+    public void printMessage(String message) {
+        out.println(message);
     }
 }
