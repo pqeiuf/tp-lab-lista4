@@ -8,7 +8,7 @@ import java.io.*;
  */
 public class ClientThread extends Thread {
 
-    private Socket socket;
+    public Socket socket;
     private ServerApp server;
     public int playerNumber;
     public int status; //0 - czeka na gre, 1 w grze, czeka na ruch, 2 - wykonuje ruch
@@ -34,11 +34,18 @@ public class ClientThread extends Thread {
             out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            String clientMessage;
-
+            String clientMessage, playerNickname;
             clientMessage = in.readLine();
-            System.out.println("player:" + playerNumber + " > " + clientMessage);
-            out.println(clientMessage);
+
+            int spaceIndex = clientMessage.indexOf(' ');
+            try {
+                playerNickname = clientMessage.substring(spaceIndex + 1);
+            } catch (Exception e) {
+                playerNickname = "Unknown";
+            }
+
+            System.out.println("player with nickname '" + playerNickname + "' connected to server");
+            out.println("Hello " + playerNickname + "! I am server!");
 
             do {
                 clientMessage = in.readLine();

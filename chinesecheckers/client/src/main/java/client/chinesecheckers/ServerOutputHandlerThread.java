@@ -22,7 +22,7 @@ public class ServerOutputHandlerThread extends Thread {
             PrintWriter out = new PrintWriter(clientApp.socket.getOutputStream(), true);
 
             // Pierwsza wiadomość 'handshake' podająca nickname
-            out.println("Hello " + clientApp.playerNickname);
+            out.println("nickname " + clientApp.playerNickname);
 
             String messageToServer;
             do {
