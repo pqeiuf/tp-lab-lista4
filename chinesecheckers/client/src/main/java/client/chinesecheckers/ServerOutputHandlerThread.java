@@ -15,7 +15,6 @@ public class ServerOutputHandlerThread extends Thread {
         this.clientApp = clientApp;
     }
 
-
     @Override
     public void run() {
         try {
