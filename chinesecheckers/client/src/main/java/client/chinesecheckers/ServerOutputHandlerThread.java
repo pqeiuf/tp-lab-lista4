@@ -26,26 +26,21 @@ public class ServerOutputHandlerThread extends Thread {
 
             String messageToServer;
             do {
-                if (clientApp.consoleBufferReader.ready()) {
-                    // Sformatuj wpisany input gracza
-                    messageToServer = UserInputInterpreter.interpretUserInput(clientApp.consoleBufferReader.readLine());
+                messageToServer = UserInputInterpreter.interpretUserInput(clientApp.consoleBufferReader.readLine());
 
-                    if (messageToServer.equals("exit")) {
-                        // Jeśli messageToServer to "exit" to znaczy że gracz chce wyłączyć aplikację
-                        clientApp.socket.close();
-                        System.exit(0);
+                if (messageToServer.equals("exit")) {
+                    // Jeśli messageToServer to "exit" to znaczy że gracz chce wyłączyć aplikację
+                    clientApp.socket.close();
+                    System.exit(0);
 
-                    } else if (messageToServer.startsWith("HELP")) {
-                        System.out.println(messageToServer.substring(4));
+                } else if (messageToServer.startsWith("HELP")) {
+                    System.out.println(messageToServer.substring(4));
 
-                    } else if (messageToServer.startsWith("ERROR")) {
-                        System.out.println(messageToServer);
+                } else if (messageToServer.startsWith("ERROR")) {
+                    System.out.println(messageToServer);
 
-                    } else {
-                        out.println(messageToServer);
-                    }
                 } else {
-                    Thread.sleep(45);
+                    out.println(messageToServer);
                 }
             } while (true);
 

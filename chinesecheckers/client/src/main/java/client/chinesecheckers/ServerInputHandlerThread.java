@@ -24,16 +24,16 @@ public class ServerInputHandlerThread extends Thread {
             String serverResponse;
             do {
                 if (in.ready()) {
-                serverResponse = in.readLine();
+                    serverResponse = in.readLine();
 
-                // Jeśli response jest null to znaczy że serwer został zamknięty wówczas zamykamy aplikację
-                if (serverResponse == null) {
-                    System.out.println(" >> Server has been shut down");
-                    clientApp.socket.close();
-                    System.exit(1);
-                }
-                
-                System.out.println(" >> " + serverResponse);
+                    // Jeśli response jest null to znaczy że serwer został zamknięty wówczas zamykamy aplikację
+                    if (serverResponse == null) {
+                        System.out.println(" >> Server has been shut down");
+                        clientApp.socket.close();
+                        System.exit(1);
+                    }
+                    
+                    System.out.println(" >> " + serverResponse);
                 } else {
                     Thread.sleep(30);
                 }
