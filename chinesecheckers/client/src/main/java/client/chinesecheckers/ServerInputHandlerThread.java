@@ -23,6 +23,7 @@ public class ServerInputHandlerThread extends Thread {
 
             String serverResponse;
             do {
+                if (in.ready()) {
                 serverResponse = in.readLine();
 
                 // Jeśli response jest null to znaczy że serwer został zamknięty wówczas zamykamy aplikację
@@ -33,7 +34,9 @@ public class ServerInputHandlerThread extends Thread {
                 }
                 
                 System.out.println(" >> " + serverResponse);
-
+                } else {
+                    Thread.sleep(30);
+                }
             } while (true);
 
         } catch (Exception IOError) { 
